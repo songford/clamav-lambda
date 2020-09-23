@@ -1,4 +1,4 @@
-data "aws_iam_policy_document" "clamav-scan-iam-policy" {
+data "aws_iam_policy_document" "clamav-scan-iam-policy-document" {
   statement {
     actions = [
       "logs:CreateLogGroup",
@@ -41,4 +41,22 @@ data "aws_iam_policy_document" "clamav-scan-iam-policy" {
     ]
     effect = "Allow"
   }
+
+  statement {
+    actions = [
+      "s3:*"
+    ]
+    resources = [
+      aws_s3_bucket.clamav-bin.arn,
+      "${aws_s3_bucket.clamav-bin.arn}/*",
+      aws_s3_bucket.scan_candidate_bucket.arn,
+      "${aws_s3_bucket.scan_candidate_bucket.arn}/*"
+    ]
+    effect = "Allow"
+  }
+}
+
+resource "aws_iam_role_policy" "clamav_scan_iam_role_policy" {
+  policy = data.aws_iam_policy_document.clamav-scan-iam-policy-document.json
+  role = aws_iam_role.clamav-scan-iam-role.id
 }
