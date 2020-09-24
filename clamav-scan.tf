@@ -27,4 +27,11 @@ resource "aws_lambda_function" "clamav-scan"{
   role = aws_iam_role.clamav-scan-iam-role.arn
   runtime = "java11"
   filename = "clamav-scan-1.0-SNAPSHOT.zip"
+  layers = [aws_lambda_layer_version.clamav-bin-layer.id]
+}
+
+resource "aws_lambda_layer_version" "clamav-bin-layer" {
+  layer_name = "clamav-bin-layer"
+  s3_bucket = "clamav-bin"
+  s3_key = "clamav.zip"
 }
